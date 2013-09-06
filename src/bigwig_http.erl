@@ -21,18 +21,19 @@ start_link() ->
 
 dispatch_rules() ->
     %% {Host, list({Path, Handler, Opts})}
-    [{'_', [
+    [
+     {'_', [
 
-            {[],                       bigwig_http_static, [<<"html">>,<<"index.html">>]}
-        ,   {[<<"static">>, '...'],     bigwig_http_static, []}
-        ,   {[<<"vm">>],                bigwig_http_vm, []}
-        ,   {[<<"rb">>, <<"stream">>],  bigwig_http_rb_stream, []}
-        ,   {[<<"rb">>, '...'],         bigwig_http_rb, []}
-        ,   {[<<"pid">>, '...'],        bigwig_http_pid, []}
-        ,   {[<<"module">>, '...'],     bigwig_http_module, []}
-        ,   {[<<"top">>, '...'],        bigwig_http_etop2, []}
-        ,   {[<<"appmon">>, '...'],     bigwig_http_appmon, []}
-        ,   {[<<"stats-stream">>],      bigwig_http_stats_stream, []}
+            {["/"],                       bigwig_http_static, [<<"html">>,<<"index.html">>]}
+        ,   {["/static/..."],     bigwig_http_static, []}
+        ,   {["/vm"],                bigwig_http_vm, []}
+        ,   {["/rb/stream"],  bigwig_http_rb_stream, []}
+        ,   {["/rb/..."],         bigwig_http_rb, []}
+        ,   {["/pid/..."],        bigwig_http_pid, []}
+        ,   {["/module/..."],     bigwig_http_module, []}
+        ,   {["/top/..."],        bigwig_http_etop2, []}
+        ,   {["/appmon/..."],     bigwig_http_appmon, []}
+        ,   {["/stats-stream"],      bigwig_http_stats_stream, []}
         ,   {'_',                       bigwig_http_catchall, []}
     ]}].
 
@@ -51,9 +52,18 @@ init([]) ->
     error_logger:info_msg("Bigwig listening on http://~s:~B/~n", [IpStr,Port]),
     %%
     %% Name, NbAcceptors, Transport, TransOpts, Protocol, ProtoOpts
-    cowboy:start_listener(http, NumAcceptors,
-        cowboy_tcp_transport, [{port, Port}],
-        cowboy_http_protocol, [{dispatch, dispatch_rules()}]
+  %% start_http(Ref, NbAcceptors, TransOpts, ProtoOpts) -> {ok, pid()}
+  %%
+  %%     Types:
+  %%
+  %%             Ref = ranch:ref()
+  %%                     NbAcceptors = non_neg_integer()
+  %%                             TransOpts = ranch_tcp:opts()
+  %%                                     ProtoOpts = cowboy_protocol:opts()
+  %%
+    cowboy:start_http(http, NumAcceptors,
+        [{port, Port}],
+        [{env, [{dispatch, cowboy_router:compile(dispatch_rules())}]}]
     ),
 
     {ok, #state{}}.
