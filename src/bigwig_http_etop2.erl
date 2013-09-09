@@ -11,7 +11,6 @@ init({tcp, http}, Req, _Opts) ->
 handle(Req0, State) ->
     {Path, Req} = cowboy_req:path_info(Req0),
     {Method, Req1} = cowboy_req:method(Req),
-    io:format("bwetop2 ~p ~p~n", [Method, Path]),
     handle_path(Method, Path, Req1, State).
 
 handle_path(<<"GET">>, [], Req, State) ->
@@ -31,7 +30,6 @@ terminate(_Reason, _Req, _State) ->
     ok.
 
 handle_get(Req, State) ->
-  io:format("handle_get~n"),
   Headers = [{<<"Content-Type">>, <<"application/json">>}],
   Info = etop2:update(),
   Body = jsx:term_to_json(Info),

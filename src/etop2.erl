@@ -91,7 +91,6 @@ handle_cast(_Msg, State) ->
   {stop, unhandled_cast, State}.
 
 handle_call(update, _From, State) ->
-  io:format("got update msg~n"),
   Info = update(State),
   Json = update_json(Info, State),
   {reply, Json, State};
