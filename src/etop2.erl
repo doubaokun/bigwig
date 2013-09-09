@@ -91,6 +91,7 @@ handle_cast(_Msg, State) ->
   {stop, unhandled_cast, State}.
 
 handle_call(update, _From, State) ->
+  io:format("got update msg~n"),
   Info = update(State),
   Json = update_json(Info, State),
   {reply, Json, State};
@@ -244,15 +245,46 @@ handle_args([_| R], C) ->
 handle_args([], C) ->
   C.
 
+calc_cpu([]) ->
+  0.0;
+
+calc_cpu(undefined) ->
+  0.0;
+
+calc_cpu(Schedulers) ->
+  Usage = lists:map(fun({_SchId, Active, Total}) -> Active / Total end,
+                    Schedulers),
+  Sum = lists:foldl(fun(X, Acc) -> X + Acc end, 0.0, Usage),
+  round(100.0 * Sum / length(Usage)).
+
 loadinfo(SysI) ->
+	%{now = {0, 0, 0},
+	% n_procs = 0,
+	% wall_clock = {0, 0},
+	% runtime = {0, 0},
+	% run_queue = 0,
+	% alloc_areas = [],
+	% memi = [{total, 0},
+	%	 {processes, 0}, 
+	%	 {ets, 0},
+	%	 {atom, 0},
+	%	 {code, 0},
+	%	 {binary, 0}],
+	% procinfo = []
+ %{etop_info,
+ %              {1378,739525,865859},
+ %              25,undefined,
+ %              [{3,5353,16285871132},
+ %               {4,4843,16285857192},
+ %               {1,5062,16285848856},
+ %               {2,12635786,16285846414}],
+ %              0,[],
+ %              [{total,12962152},
   #etop_info{n_procs = Procs,
              run_queue = RQ,
              now = Now,
-             wall_clock = {_, WC},
-             runtime = {_, RT}} = SysI,
-  Cpu = try round(100*RT/WC)
-        catch _:_ -> 0
-        end,
+             runtime = Runtime} = SysI,
+  Cpu = calc_cpu(Runtime),
   Clock = io_lib:format("~2.2.0w:~2.2.0w:~2.2.0w",
                         tuple_to_list(element(2,calendar:now_to_datetime(Now)))),
   {Cpu,Procs,RQ,Clock}.
