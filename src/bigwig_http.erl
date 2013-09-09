@@ -23,18 +23,17 @@ dispatch_rules() ->
     %% {Host, list({Path, Handler, Opts})}
     [
      {'_', [
-
-            {["/"],                       bigwig_http_static, [<<"html">>,<<"index.html">>]}
-        ,   {["/static/[...]"],     bigwig_http_static, []}
-        ,   {["/vm"],                bigwig_http_vm, []}
-        ,   {["/rb/stream"],  bigwig_http_rb_stream, []}
-        ,   {["/rb/[...]"],         bigwig_http_rb, []}
-        ,   {["/pid/[...]"],        bigwig_http_pid, []}
-        ,   {["/module/[...]"],     bigwig_http_module, []}
-        ,   {["/top/[...]"],        bigwig_http_etop2, []}
-        ,   {["/appmon/[...]"],     bigwig_http_appmon, []}
-        ,   {["/stats-stream"],      bigwig_http_stats_stream, []}
-        ,   {'_',                       bigwig_http_catchall, []}
+            {["/"],             bigwig_http_static, [<<"html">>,<<"index.html">>]}
+        ,   {["/static/[...]"], bigwig_http_static, []}
+        ,   {["/vm"],           bigwig_http_vm, []}
+        ,   {["/rb/stream"],    bigwig_http_rb_stream, []}
+        ,   {["/rb/[...]"],     bigwig_http_rb, []}
+        ,   {["/pid/[...]"],    bigwig_http_pid, []}
+        ,   {["/module/[...]"], bigwig_http_module, []}
+        ,   {["/top/[...]"],    bigwig_http_etop2, []}
+        ,   {["/appmon/[...]"], bigwig_http_appmon, []}
+        ,   {["/stats-stream"], bigwig_http_stats_stream, []}
+        ,   {'_',               bigwig_http_catchall, []}
     ]}].
 
 confval(Key, Default) ->
