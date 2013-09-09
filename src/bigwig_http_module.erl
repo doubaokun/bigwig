@@ -13,7 +13,7 @@ handle(Req0, State) ->
     {Method, Req1} = cowboy_req:method(Req),
     handle_path(Method, Path, Req1, State).
 
-handle_path('POST', [<<"module">>, Module], Req, State) ->
+handle_path(<<"POST">>, [Module], Req, State) ->
     {Props, Req2} = cowboy_req:body_qs(Req),
     case proplists:get_value(<<"reload">>, Props) of
         undefined -> 
@@ -23,7 +23,7 @@ handle_path('POST', [<<"module">>, Module], Req, State) ->
             {ok, Req3} = cowboy_req:reply(200, [], <<"ok">>, Req2),
             {ok, Req3, State}
     end;
-handle_path('GET', [<<"module">>, Module], Req, State) ->
+handle_path(<<"GET">>, [Module], Req, State) ->
     case to_module_info(Module) of
         [_|_] = Info -> json_response(Info, Req, State);
         _ -> not_found(Req, State)
